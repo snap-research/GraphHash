@@ -2,6 +2,8 @@
 
 This is the offical Github repository of GraphHash.
 
+![GraphHash Logo](GraphHash.png)
+
 [GraphHash: Graph Clustering Enables Parameter Efficiency in Recommender Systems](https://arxiv.org/abs/2412.17245)
 
 [Xinyi Wu](https://xinyiwu98.github.io/), [Donald Loveland](https://www.donaldloveland.com/), [Runjin Chen](https://chenrunjin.github.io/), Yozen Liu, Xin Chen, Leonardo Neves, Ali Jadbabaie, [Clark Mingxuan Ju](https://jumxglhf.github.io/), [Neil Shah](https://nshah.net/), [Tong Zhao](https://tzhao.io/)
