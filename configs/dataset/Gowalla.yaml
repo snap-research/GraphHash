@@ -1,0 +1,12 @@
+_target_: data.DatasetLoader
+name: Gowalla
+loss: BPR
+id_only: True
+k: 20
+resolution: 200
+embed_dim: 64
+lr: 1e-3
+wd: 1e-8
+bs: 1027370
+patience: 50
+gamma: 1

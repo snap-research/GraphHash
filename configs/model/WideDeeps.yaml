@@ -1,0 +1,13 @@
+_target_: models.widedeep.WideDeeps
+user_vocab_size: 100
+item_vocab_size: 100
+embedding_dim: 64
+vocab_sizes: 
+  - 7
+  - 7
+  - 2
+  - 3
+  - 2
+  - 9
+  - 80
+  - 233

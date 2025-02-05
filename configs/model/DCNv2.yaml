@@ -1,0 +1,6 @@
+_target_: models.dcnv2.DCNv2
+user_vocab_size: 100
+item_vocab_size: 100
+embedding_dim: 64
+input_user_feature_size: 20
+input_item_feature_size: 20

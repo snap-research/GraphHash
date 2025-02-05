@@ -1,0 +1,14 @@
+_target_: data.DatasetLoader
+name: AmazonBook
+loss: BPR
+id_only: True
+k: 20
+num_total_users: 52643
+num_total_items: 91599
+resolution: 200
+embed_dim: 64
+lr: 1e-2
+wd: 1e-6
+bs: 2984108
+patience: 50
+gamma: 1

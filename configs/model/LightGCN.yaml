@@ -1,0 +1,8 @@
+_target_: models.lightgcn.LightGCN
+user_vocab_size: 100
+item_vocab_size: 100
+embedding_dim: 64
+user_hashed_ids: 0
+item_hashed_ids: 0
+num_layers: 2
+

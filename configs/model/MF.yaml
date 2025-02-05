@@ -1,0 +1,4 @@
+_target_: models.mf.MF
+user_vocab_size: 100
+item_vocab_size: 100
+embedding_dim: 64
