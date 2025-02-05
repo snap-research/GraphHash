@@ -18,10 +18,10 @@ from utils import (
     double_graph_hash,
 )
 from data import DatasetLoader
-from train_test_id_only import train_and_evaluate
-from train_test_ranking import train_and_evaluate_ranking
-from train_test_dau import train_and_evaluate_dau
-from train_test_ials import train_and_evaluate_ials
+from training.train_test_id_only import train_and_evaluate
+from training.train_test_ranking import train_and_evaluate_ranking
+from training.train_test_dau import train_and_evaluate_dau
+from training.train_test_ials import train_and_evaluate_ials
 from loss import BPRLoss, DAULoss, iALSLoss
 from data import (
     UserItemRatingDataset,
