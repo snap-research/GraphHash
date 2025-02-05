@@ -24,9 +24,6 @@ class BPRLoss(nn.Module):
     def forward(self, pos_score, neg_score):
         loss = -torch.log(self.gamma + torch.sigmoid(pos_score - neg_score)).mean()
         return loss
-    
-
-
 
 
 class DAULoss(nn.Module):
@@ -79,9 +76,8 @@ class DAULoss(nn.Module):
         return torch.pdist(x, p=2).pow(2).mul(-2).exp().mean().log()
 
 
-
 class iALSLoss(nn.Module):
-    def __init__(self,  alpha=0.1):
+    def __init__(self, alpha=0.1):
         """
         Initializes the iALS loss module for sparse positive-only interaction matrices.
 
@@ -92,7 +88,9 @@ class iALSLoss(nn.Module):
         super(iALSLoss, self).__init__()
         self.alpha = alpha
 
-    def forward(self, user_embeddings, positive_item_embeddings, negative_item_embeddings):
+    def forward(
+        self, user_embeddings, positive_item_embeddings, negative_item_embeddings
+    ):
         """
         Computes the iALS loss with sparse interactions.
 
@@ -111,19 +109,18 @@ class iALSLoss(nn.Module):
         positive_predictions = (user_embeddings * positive_item_embeddings).sum(dim=1)
 
         # Compute loss for positive interactions
-        positive_loss = confidence * (1 - positive_predictions) ** 2  # Binary preference = 1
+        positive_loss = (
+            confidence * (1 - positive_predictions) ** 2
+        )  # Binary preference = 1
 
         # Compute loss for negative (unobserved) interactions
         # Approximate negative loss using all interactions
 
         negative_predictions = (user_embeddings * negative_item_embeddings).sum(dim=1)
-    
-        negative_loss = (negative_predictions ** 2).sum()  # Exclude positives
 
-        
+        negative_loss = (negative_predictions**2).sum()  # Exclude positives
 
         # Total loss
-        loss = positive_loss.sum() + negative_loss 
+        loss = positive_loss.sum() + negative_loss
 
         return loss
-

@@ -6,7 +6,6 @@ import numpy as np
 
 
 class LightGCN(BaseRecommender):
-
     def __init__(
         self,
         user_vocab_size: int,
@@ -14,14 +13,13 @@ class LightGCN(BaseRecommender):
         embedding_dim: int,
         user_hashed_ids,
         item_hashed_ids,
-        biadjacency=sp.sparse.csr_matrix(np.ones((3,3))),
+        biadjacency=sp.sparse.csr_matrix(np.ones((3, 3))),
         hash_type="full",
         num_layers=2,
     ):
-
         super(LightGCN, self).__init__()
         self.embedding_dim = embedding_dim
-         # define layers
+        # define layers
         self.user_emb_table = nn.Embedding(user_vocab_size, embedding_dim)
         self.item_emb_table = nn.Embedding(item_vocab_size, embedding_dim)
 
@@ -39,10 +37,6 @@ class LightGCN(BaseRecommender):
 
         self.hash_type = hash_type
 
-       
-
-
-
     def get_norm_adj_mat(self):
         r"""Get the normalized interaction matrix of users and items.
 
@@ -57,18 +51,26 @@ class LightGCN(BaseRecommender):
         """
 
         # build adj matrix
-        A = sp.sparse.dok_matrix((self.n_users + self.n_items,
-                           self.n_users + self.n_items), dtype=np.float32)
+        A = sp.sparse.dok_matrix(
+            (self.n_users + self.n_items, self.n_users + self.n_items), dtype=np.float32
+        )
         inter_M = self.interaction_matrix
         inter_M_t = self.interaction_matrix.T
 
         row_indices, col_indices = inter_M.nonzero()
         row_indices_t, col_indices_t = inter_M_t.nonzero()
 
-        data_dict = dict(zip(zip(row_indices, col_indices+self.n_users),
-                             [1]*inter_M.nnz))
-        data_dict.update(dict(zip(zip(row_indices_t+self.n_users, col_indices_t),
-                                  [1]*inter_M_t.nnz)))
+        data_dict = dict(
+            zip(zip(row_indices, col_indices + self.n_users), [1] * inter_M.nnz)
+        )
+        data_dict.update(
+            dict(
+                zip(
+                    zip(row_indices_t + self.n_users, col_indices_t),
+                    [1] * inter_M_t.nnz,
+                )
+            )
+        )
         A._update(data_dict)
         # norm adj matrix
         sumArr = (A > 0).sum(axis=1)
@@ -87,8 +89,6 @@ class LightGCN(BaseRecommender):
 
         return SparseL
 
-
-
     def get_ego_embeddings(self):
         r"""Get the embedding of users and items and combine to an embedding matrix.
 
@@ -98,8 +98,8 @@ class LightGCN(BaseRecommender):
         if self.hash_type not in ["double", "double_frequency", "double_graph"]:
             user_embeddings = self.user_emb_table(self.user_hashed_ids)
             item_embeddings = self.item_emb_table(self.item_hashed_ids)
-           
-        else: 
+
+        else:
             user_embeddings = self.user_emb_table(self.user_hashed_ids)
             item_embeddings = self.item_emb_table(self.item_hashed_ids)
             user_embeddings = torch.sum(user_embeddings, dim=-2)
@@ -107,9 +107,7 @@ class LightGCN(BaseRecommender):
 
         ego_embeddings = torch.cat([user_embeddings, item_embeddings], dim=0)
 
-
         return ego_embeddings
-
 
     def propagate(self):
         all_embeddings = self.get_ego_embeddings()
@@ -125,29 +123,24 @@ class LightGCN(BaseRecommender):
             lightgcn_all_embeddings, [self.n_users, self.n_items]
         )
         return user_all_embeddings, item_all_embeddings
-    
-    
-    def forward(self, user_id, pos_item_id, neg_item_id):
 
+    def forward(self, user_id, pos_item_id, neg_item_id):
         user_all_embeddings, item_all_embeddings = self.propagate()
         user_id_embeddings = user_all_embeddings[user_id]
         pos_item_id_embeddings = item_all_embeddings[pos_item_id]
         neg_item_id_embeddings = item_all_embeddings[neg_item_id]
-       
 
         pos_score = torch.sum(user_id_embeddings * pos_item_id_embeddings, dim=-1)
 
         neg_score = torch.sum(user_id_embeddings * neg_item_id_embeddings, dim=-1)
 
-
         return pos_score, neg_score
-    
+
     def get_scores(self, hash_type, device, user_id, item_id):
-    
         user_all_embeddings, item_all_embeddings = self.propagate()
         user_id_embeddings = user_all_embeddings[user_id]
         item_id_embeddings = item_all_embeddings[item_id]
-  
+
         scores = user_id_embeddings @ item_id_embeddings.t()
-        
+
         return scores

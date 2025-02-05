@@ -14,7 +14,6 @@ class UserItemRatingDataset(Dataset):
         self.num_users = len(self.user_ids)
         self.num_items = len(self.item_ids)
 
-
     def __len__(self):
         return self.edge_index.shape[-1]
 
@@ -23,7 +22,6 @@ class UserItemRatingDataset(Dataset):
         item_id = self.edge_index[1, idx].item()
 
         return (user_id, item_id)
-    
 
 
 class UserItemRatingDatasetv2(Dataset):
@@ -39,33 +37,29 @@ class UserItemRatingDatasetv2(Dataset):
         self.num_users = len(self.user_ids)
         self.num_items = len(self.item_ids)
 
-
     def __len__(self):
         return self.edge_index.shape[-1]
 
     def __getitem__(self, idx):
         user_id = self.edge_index[0, idx].item()
         item_id = self.edge_index[1, idx].item()
-        user_feature = self.user_features[user_id,:]
-        item_feature = self.item_features[item_id,:]
+        user_feature = self.user_features[user_id, :]
+        item_feature = self.item_features[item_id, :]
         rating = self.ratings[idx].item()
 
-
         return (user_id, item_id, user_feature, item_feature, rating)
-    
+
 
 class DatasetLoader:
     def __init__(self, dataset):
         if dataset in ["MovieLens1M-ranking", "Frappe"]:
-            train_file_name = (f"datasets/{dataset}-processed/train.pt")
+            train_file_name = f"datasets/{dataset}-processed/train.pt"
             self.train_set = torch.load(train_file_name)
 
-
-            val_file_name = (f"datasets/{dataset}-processed/val.pt")
+            val_file_name = f"datasets/{dataset}-processed/val.pt"
             self.val_set = torch.load(val_file_name)
 
-
-            test_file_name = (f"datasets/{dataset}-processed/test.pt")
+            test_file_name = f"datasets/{dataset}-processed/test.pt"
             self.test_set = torch.load(test_file_name)
 
         else:
@@ -80,8 +74,6 @@ class DatasetLoader:
 
     def get_datasets(self):
         return self.train_set, self.val_set, self.test_set
-    
-
 
 
 class MovieLens20MDataset(Dataset):
@@ -91,7 +83,7 @@ class MovieLens20MDataset(Dataset):
         self.file = None  # File handle to be opened lazily
 
         # Open the file temporarily to get the dataset length
-        with h5py.File(self.h5_file_path, 'r') as f:
+        with h5py.File(self.h5_file_path, "r") as f:
             self.data_len = f[f"{self.dataset_key}/block0_values"].shape[0]
 
     def __len__(self):
@@ -100,7 +92,7 @@ class MovieLens20MDataset(Dataset):
     def __getitem__(self, index):
         # Open the HDF5 file lazily (if not already opened)
         if self.file is None:
-            self.file = h5py.File(self.h5_file_path, 'r')
+            self.file = h5py.File(self.h5_file_path, "r")
 
         # Access the data at the given index
         user_id = int(self.file[f"{self.dataset_key}/block0_values"][index, 0])
@@ -108,12 +100,15 @@ class MovieLens20MDataset(Dataset):
         rating = self.file[f"{self.dataset_key}/block0_values"][index, 2]
         dense_features = self.file[f"{self.dataset_key}/block0_values"][index, 3:23]
         sparse_features = self.file[f"{self.dataset_key}/block0_values"][index, 23:38]
-        
-      
-        return user_id, item_id, torch.tensor(dense_features, dtype=torch.float32), torch.tensor(sparse_features, dtype=torch.int64), rating
-    
-    
-    
+
+        return (
+            user_id,
+            item_id,
+            torch.tensor(dense_features, dtype=torch.float32),
+            torch.tensor(sparse_features, dtype=torch.int64),
+            rating,
+        )
+
     def __del__(self):
         # Ensure the file is closed when the dataset object is deleted
         if self.file is not None:
@@ -137,4 +132,3 @@ class FrappeDataset(Dataset):
         rating = self.ratings[idx].item()
 
         return user_id, item_id, sparse_features, rating
-

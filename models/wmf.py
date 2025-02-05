@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class WMF(nn.Module):
     """Weighted Matrix Factorization Model"""
 
@@ -42,13 +43,13 @@ class WMF(nn.Module):
     def forward(self, user_id, item_id, interaction_matrix, confidence_matrix):
         """
         Compute the reconstruction loss for the interaction matrix.
-        
+
         Args:
             user_id (Tensor): Tensor of user IDs.
             item_id (Tensor): Tensor of item IDs.
             interaction_matrix (Tensor): Ground truth matrix of interactions.
             confidence_matrix (Tensor): Confidence weights for the interactions.
-        
+
         Returns:
             loss (Tensor): Weighted matrix factorization loss.
         """
@@ -61,7 +62,7 @@ class WMF(nn.Module):
 
         # Compute loss: Weighted squared error
         interaction_diff = interaction_matrix - reconstruction
-        weighted_diff = confidence_matrix * (interaction_diff ** 2)
+        weighted_diff = confidence_matrix * (interaction_diff**2)
         loss = torch.sum(weighted_diff)
 
         return loss
@@ -69,11 +70,11 @@ class WMF(nn.Module):
     def get_scores(self, user_id, item_id):
         """
         Compute scores for user-item pairs.
-        
+
         Args:
             user_id (Tensor): Tensor of user IDs.
             item_id (Tensor): Tensor of item IDs.
-        
+
         Returns:
             scores (Tensor): Predicted interaction scores.
         """

@@ -4,13 +4,12 @@ from abc import ABC, abstractmethod
 import torch.nn as nn
 
 
-
 class BaseRecommender(ABC, nn.Module):
     """Base class for recommender models."""
-    
+
     def __init__(self):
         super().__init__()
-    
+
     @abstractmethod
     def forward(self, *args, **kwargs):
         """Abstract method to be implemented by subclasses for forward pass."""
@@ -30,10 +29,10 @@ class BaseRecommender(ABC, nn.Module):
         item_clusters,
         device,
         batch_size=20000,
-        k=10
+        k=10,
     ):
         """Recommends top-k items for users."""
-        
+
         top_k_indices_all = []
 
         test_users = list(test_candidates.keys())
@@ -41,20 +40,20 @@ class BaseRecommender(ABC, nn.Module):
         test_user_batches = np.array_split(test_users, num_batches)
 
         for user_id_batch in test_user_batches:
-            
-
-            
             user_id_hashed = user_clusters[user_id_batch]
             all_item_id_hashed = item_clusters
-        
 
-            scores = self.get_scores(hash_type, device, user_id_hashed, all_item_id_hashed)
+            scores = self.get_scores(
+                hash_type, device, user_id_hashed, all_item_id_hashed
+            )
 
             mask_user_idx = []
             mask_item_idx = []
             user_id_batch_2_idx = {user: idx for idx, user in enumerate(user_id_batch)}
             for user in user_id_batch:
-                mask_user_idx.extend([user_id_batch_2_idx[user]] * len(train_candidates[user]))
+                mask_user_idx.extend(
+                    [user_id_batch_2_idx[user]] * len(train_candidates[user])
+                )
                 mask_item_idx.extend(train_candidates[user])
             mask_user_idx = torch.tensor(mask_user_idx, dtype=torch.int64).to(device)
             mask_item_idx = torch.tensor(mask_item_idx, dtype=torch.int64).to(device)
